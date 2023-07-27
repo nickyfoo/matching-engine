@@ -6,19 +6,10 @@
 #include <string>
 #include <exception>
 #include "TCPClient.h"
+#include "WSALoader.h";
 
 int main() {
-  WSADATA wsaData{};
-  int wsaerr{};
-  WORD wVersionRequested{MAKEWORD(2, 2)};
-  wsaerr = WSAStartup(wVersionRequested, &wsaData);
-  if (wsaerr) {
-    std::cout << "The Winsock dll not found!" << std::endl;
-    return 0;
-  } else {
-    std::cout << "The Winsock dll found!" << std::endl;
-    std::cout << "The status: " << wsaData.szSystemStatus << std::endl << '\n';
-  }
+  WSALoader wsaLoader{};
 
   try {
     TCPClient client{};
@@ -31,5 +22,4 @@ int main() {
   } catch (const std::runtime_error& e) {
     std::cout << "Runtime error: " << e.what() << '\n';
   }
-  WSACleanup();
 } 

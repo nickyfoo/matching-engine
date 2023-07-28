@@ -3,6 +3,7 @@
 #include <ws2tcpip.h>
 
 #include <stdexcept>
+
 #include "Data.h"
 class TCPClient {
  public:
@@ -10,6 +11,8 @@ class TCPClient {
     createSocket();
     connectToServer();
   };
+
+  ~TCPClient() { closesocket(m_clientSocket); }
   void sendMessage(const Data& data);
   Data receiveMessage();
 

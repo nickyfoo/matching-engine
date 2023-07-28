@@ -1,0 +1,18 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/client/.vs
+/client/Debug
+/client/x64/Debug
+/client/matching-engine-client.vcxproj.user
+/client/matching-engine-client.vcxproj.filters
+/client/matching-engine-client.vcxproj
+/client/matching-engine-client.sln
+/server/.vs/matching-engine-server/FileContentIndex
+/server/.vs
+/server/x64/Debug
+/server/matching-engine-server.vcxproj.user
+/server/matching-engine-server.vcxproj.filters
+/server/matching-engine-server.vcxproj
+/server/matching-engine-server.sln

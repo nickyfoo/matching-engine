@@ -16,3 +16,5 @@
 /server/matching-engine-server.vcxproj.filters
 /server/matching-engine-server.vcxproj
 /server/matching-engine-server.sln
+/.vs
+/.gitignore

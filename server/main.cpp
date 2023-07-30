@@ -12,10 +12,12 @@
 #include "TCPServer.h"
 #include "WSALoader.h"
 #include "OrderBookTest.h"
+#include "OrderDispatcherTest.h"
 
 
 int main() {
   OrderBookTest test{};
+  OrderDispatcherTest test2{};
   // WSALoader wsaLoader{};
 
   // try {

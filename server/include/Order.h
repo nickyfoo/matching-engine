@@ -15,17 +15,11 @@ class Order {
         m_quantity{quantity},
         m_price{price} {}
 
-  Order(const OrderRequest& request, int orderID)
+  Order(const OrderRequest& request)
       : m_side{request.getSide()},
         m_orderID{request.getOrderID()},
         m_quantity{request.getQuantity()},
-        m_price{request.getPrice()} {
-    if (request.getOrderID() == -1) m_orderID = orderID;
-    if (request.getType() == RequestType::SUB_MO) {
-      m_price = request.getSide() == Side::buy ? k_buyMarketOrderPrice
-                                               : k_sellMarketOrderPrice;
-    }
-  }
+        m_price{setPrice(request)} {}
 
   friend std::ostream& operator<<(std::ostream& out, const Order& orderBook) {
     out << orderBook.m_quantity << "@" << orderBook.m_price << "#"
@@ -41,8 +35,17 @@ class Order {
   void transactWith(Order& other);
 
  private:
-  Side m_side{};
-  int m_orderID{};
+  const Side m_side{};
+  const int m_orderID{};
   int m_quantity{};
-  int m_price{};
+  const int m_price{};
+
+  int setPrice(const OrderRequest& request) {
+    if (request.getType() == RequestType::SUB_MO) {
+      return (request.getSide() == Side::buy) ? k_buyMarketOrderPrice
+                                              : k_sellMarketOrderPrice;
+    } else {
+      return request.getPrice();
+    }
+  }
 };

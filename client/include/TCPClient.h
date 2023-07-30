@@ -3,8 +3,8 @@
 #include <ws2tcpip.h>
 
 #include <stdexcept>
+#include "OrderRequest.h"
 
-#include "Data.h"
 class TCPClient {
  public:
   TCPClient() {
@@ -12,9 +12,11 @@ class TCPClient {
     connectToServer();
   };
 
-  ~TCPClient() { closesocket(m_clientSocket); }
-  void sendMessage(const Data& data);
-  Data receiveMessage();
+  ~TCPClient() {
+    closesocket(m_clientSocket);
+  }
+  void sendMessage(const OrderRequest& request);
+  OrderRequest receiveMessage();
 
  private:
   static constexpr int k_port{55555};

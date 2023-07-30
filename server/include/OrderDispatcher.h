@@ -5,11 +5,12 @@ class OrderDispatcher {
  public:
   OrderDispatcher(OrderBook& orderBook)
       : m_orderBook{orderBook} {};
-  void dispatch(const OrderRequest& orderRequest) {
-    Order order{orderRequest, m_currentID++};
+  void dispatch(OrderRequest& orderRequest) {
+    orderRequest.setOrderID(m_currentID++);
+    Order order{orderRequest};
     switch (orderRequest.getType()) {
       case RequestType::CXL:
-        m_orderBook.cancelOrder(order.getOrderID());
+        m_orderBook.cancelOrder(orderRequest.getCancelledOrderID());
         return;
       case RequestType::SUB_LO:
       case RequestType::SUB_MO:

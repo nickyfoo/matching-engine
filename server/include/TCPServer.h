@@ -2,7 +2,9 @@
 #include <WinSock2.h>
 #include <ws2tcpip.h>
 
-#include "Data.h"
+#include <string>
+
+#include "OrderRequest.h"
 class TCPServer {
  public:
   TCPServer() {
@@ -14,8 +16,8 @@ class TCPServer {
     closesocket(m_serverSocket);
     closesocket(m_acceptSocket);
   }
-  void sendMessage(const Data& data);
-  Data receiveMessage();
+  void sendMessage(const OrderRequest& request);
+  OrderRequest receiveMessage();
 
  private:
   static constexpr int k_port{55555};

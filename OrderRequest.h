@@ -11,12 +11,18 @@ class OrderRequest {
     if (type != RequestType::CXL) {
       throw std::runtime_error("Invalid CXL request");
     }
+    if (cancelledOrderID < 0) {
+      throw std::runtime_error("Invalid CXL index");
+    }
   }
 
   OrderRequest(RequestType type, Side side, int quantity)
       : m_requestType{type}, m_side{side}, m_quantity{quantity} {
     if (type != RequestType::SUB_MO) {
       throw std::runtime_error("Invalid SUB_MO request");
+    }
+    if (quantity < 0) {
+      throw std::runtime_error("Invalid SUB_MO quantity");
     }
   }
 
@@ -28,6 +34,12 @@ class OrderRequest {
     if (type != RequestType::SUB_LO) {
       throw std::runtime_error("Invalid SUB_LO request");
     }
+    if (quantity < 0) {
+      throw std::runtime_error("Invalid SUB_LO quantity");
+    }
+    if (price < 0) {
+      throw std::runtime_error("Invalid SUB_LO price");
+    }
   }
   RequestType getType() const { return m_requestType; }
   const Side getSide() const { return m_side; }
@@ -37,6 +49,18 @@ class OrderRequest {
   const int getCancelledOrderID() const { return m_cancelledOrderID; }
 
   void setOrderID(int orderID) { m_orderID = orderID; }
+  bool validate() const {
+    switch (m_requestType) {
+      case RequestType::CXL:
+        return m_cancelledOrderID != -1;
+      case RequestType::SUB_MO:
+        return m_quantity != -1;
+      case RequestType::SUB_LO:
+        return m_quantity != -1 && m_price != -1;
+      default:
+        return false;
+    }
+  }
 
  private:
   const RequestType m_requestType{};

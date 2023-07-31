@@ -1,8 +1,8 @@
 #include "TCPClient.h"
 
 #include <iostream>
+#include <string>
 
-#include "Data.h"
 
 void TCPClient::createSocket() {
   m_clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);

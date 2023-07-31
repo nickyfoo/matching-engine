@@ -19,7 +19,11 @@ class Order {
       : m_side{request.getSide()},
         m_orderID{request.getOrderID()},
         m_quantity{request.getQuantity()},
-        m_price{setPrice(request)} {}
+        m_price{setPrice(request)} {
+    if (!request.validate()) {
+      throw std::runtime_error("Invalid order request");
+    }
+  }
 
   friend std::ostream& operator<<(std::ostream& out, const Order& orderBook) {
     out << orderBook.m_quantity << "@" << orderBook.m_price << "#"

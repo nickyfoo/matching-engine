@@ -1,11 +1,13 @@
 #pragma once
 #include "OrderBook.h"
 #include "OrderRequest.h"
+#include <mutex>
 class OrderDispatcher {
  public:
   OrderDispatcher(OrderBook& orderBook)
       : m_orderBook{orderBook} {};
   void dispatch(OrderRequest& orderRequest) {
+    std::lock_guard lock(m_mtx);
     orderRequest.setOrderID(m_currentID++);
     Order order{orderRequest};
     switch (orderRequest.getType()) {
@@ -25,6 +27,7 @@ class OrderDispatcher {
   }
 
  private:
+  std::mutex m_mtx;
   OrderBook& m_orderBook;
   int m_currentID{1};
 };

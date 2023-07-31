@@ -5,42 +5,45 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <thread>
+#include <utility>
 #include <vector>
 
 #include "TCPClient.h"
+#include "Timer.h"
 #include "WSALoader.h"
 
-int main() {
-  WSALoader wsaLoader{};
 
+void sendOrders(std::atomic<int>& failCounter, int numOrders) {
   try {
     TCPClient client{};
-    std::vector<OrderRequest> orders{
-        OrderRequest(RequestType::SUB_LO, Side::buy, 100, 10),
-        OrderRequest(RequestType::SUB_LO, Side::buy, 100, 11),
-        OrderRequest(RequestType::SUB_LO, Side::buy, 100, 11),
-        OrderRequest(RequestType::SUB_LO, Side::buy, 100, 11),
-        OrderRequest(RequestType::SUB_LO, Side::buy, 100, 12),
-        OrderRequest(RequestType::SUB_LO, Side::sell, 50, 10),
-        OrderRequest(RequestType::SUB_LO, Side::sell, 100, 12),
-        OrderRequest(RequestType::CXL, 3)};
     OrderRequest reply{};
-    for (auto& order : orders) {
+    for (int _ = 0; _ < numOrders; _++) {
+      OrderRequest order{OrderRequest::getRandomOrderRequest()};
       client.sendMessage(order);
       client.receiveMessage(reply);
     }
-    client.shutdownSocket();
-    int byteCount = 0;
-    do {
-      byteCount = client.receiveMessage(reply);
-      if (byteCount> 0)
-        std::cout << "Received " << byteCount << " bytes\n";
-
-      else if (byteCount== 0)
-        printf("Connection closed\n");
-    } while (byteCount > 0);
-
+    client.shutdownClient();
   } catch (const std::runtime_error& e) {
+    failCounter++;
     std::cout << "Runtime error: " << e.what() << '\n';
   }
+}
+int main() {
+  WSALoader wsaLoader{};
+  Timer timer;
+  std::atomic<int> failCounter{0};
+  constexpr int totalOrders{100000};
+  constexpr int numThreads{1000};
+  constexpr int numOrders{totalOrders / numThreads};
+  {
+    std::vector<std::jthread> threads;
+
+    for (int i = 0; i < numThreads; i++) {
+      threads.push_back(std::jthread(sendOrders, std::ref(failCounter), numOrders));
+    }
+  }
+  std::cout << "numThreads: " << numThreads << '\n';
+  std::cout << "numOrders per thread: " << numOrders << '\n';
+  std::cout << "failCounter: " << failCounter << '\n';
 }

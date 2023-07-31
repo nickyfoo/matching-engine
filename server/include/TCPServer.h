@@ -7,28 +7,23 @@
 #include "OrderRequest.h"
 class TCPServer {
  public:
-  TCPServer() {
-    setupSocket();
-    acceptConnection();
-  };
+  TCPServer() { setupServerSocket(); };
 
   ~TCPServer() {
+    shutdownSocket();
     closesocket(m_serverSocket);
-    closesocket(m_acceptSocket);
   }
-  int sendMessage(const OrderRequest& request);
-  int receiveMessage(OrderRequest& request);
+  SOCKET acceptConnection();
   void shutdownSocket();
 
  private:
   static constexpr int k_port{55555};
+  static constexpr int k_maxBacklogConnections{1000};
   SOCKET m_serverSocket{INVALID_SOCKET};
-  SOCKET m_acceptSocket{INVALID_SOCKET};
   sockaddr_in serverService{};
 
   void createSocket();
   void bindSocket();
   void listenOnSocket();
-  void setupSocket();
-  void acceptConnection();
+  void setupServerSocket();
 };

@@ -1,6 +1,7 @@
 #pragma once
 #include <stdexcept>
 
+#include "Random.h"
 #include "Types.h"
 class OrderRequest {
  public:
@@ -59,6 +60,25 @@ class OrderRequest {
         return m_quantity != -1 && m_price != -1;
       default:
         return false;
+    }
+  }
+
+  static OrderRequest getRandomOrderRequest() {
+    RequestType type{
+        Random::get(0, static_cast<int>(RequestType::MAX_TYPE_NUM) - 1)};
+    switch (type) {
+      case RequestType::CXL:
+        return OrderRequest{type, Random::get(1, 10000)};
+      case RequestType::SUB_MO:
+        return OrderRequest{type,
+                            static_cast<Side>(Random::get(
+                                1, static_cast<int>(Side::maxSide) - 1)),
+                            Random::get(1, 100)};
+      case RequestType::SUB_LO:
+        return OrderRequest{type,
+                            static_cast<Side>(Random::get(
+                                1, static_cast<int>(Side::maxSide) - 1)),
+                            Random::get(1, 100), Random::get(1, 100)};
     }
   }
 

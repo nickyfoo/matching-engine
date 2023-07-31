@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-enum class Side { buy, sell };
+enum class Side { buy, sell, maxSide };
 
 
 inline std::ostream& operator<<(std::ostream& out, const Side& side) {
@@ -21,7 +21,8 @@ inline std::ostream& operator<<(std::ostream& out, const Side& side) {
 enum class RequestType {
   SUB_LO,
   SUB_MO,
-  CXL
+  CXL,
+  MAX_TYPE_NUM
 
 };
 

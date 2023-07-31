@@ -9,7 +9,7 @@ void TCPClient::createSocket() {
     throw std::runtime_error("Client: socket() failed: " +
                              std::to_string(WSAGetLastError()));
   }
-  std::cout << "Client: Socket created\n";
+  //std::cout << "Client: Socket created\n";
 }
 
 void TCPClient::connectToServer() {
@@ -21,7 +21,7 @@ void TCPClient::connectToServer() {
     throw std::runtime_error("Client: connect() failed: " +
                              std::to_string(WSAGetLastError()));
   }
-  std::cout << "Client: Connected to server\n";
+  //std::cout << "Client: Connected to server\n";
 }
 
 void TCPClient::shutdownSocket() {
@@ -29,7 +29,7 @@ void TCPClient::shutdownSocket() {
     throw std::runtime_error("Client: shutdown() failed: " +
                              std::to_string(WSAGetLastError()));
   }
-  std::cout << "Client: Socket shutdown\n";
+  //std::cout << "Client: Socket shutdown\n";
 }
 
 int TCPClient::sendMessage(const OrderRequest& request) {
@@ -40,7 +40,7 @@ int TCPClient::sendMessage(const OrderRequest& request) {
     throw std::runtime_error("Client: send() failed: " +
                              std::to_string(WSAGetLastError()));
   }
-  std::cout << "Sent: " << request << '\n';
+  //std::cout << "Sent: " << request << '\n';
   return byteCount;
 }
 
@@ -52,6 +52,23 @@ int TCPClient::receiveMessage(OrderRequest& request) {
     throw std::runtime_error("Client: recv() failed: " +
                              std::to_string(WSAGetLastError()));
   }
-  std::cout << "Received: " << request << '\n';
+  //std::cout << "Received: " << request << '\n';
   return byteCount;
 }
+
+
+  void TCPClient::shutdownClient(){
+  shutdownSocket();
+  int byteCount = 0;
+  OrderRequest reply{};
+  do {
+    byteCount = receiveMessage(reply);
+    if (byteCount > 0)
+      std::cout << "Received " << byteCount << " bytes\n";
+
+    else if (byteCount == 0)
+      ;
+      //printf("Connection closed\n");
+  } while (byteCount > 0);
+
+  }

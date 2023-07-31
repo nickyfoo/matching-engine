@@ -19,6 +19,7 @@ class TCPClient {
   void shutdownSocket();
   int sendMessage(const OrderRequest& request);
   int receiveMessage(OrderRequest& request);
+  void shutdownClient();
 
  private:
   static constexpr int k_port{55555};

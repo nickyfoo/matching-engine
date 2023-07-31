@@ -24,10 +24,21 @@ int main() {
         OrderRequest(RequestType::SUB_LO, Side::sell, 50, 10),
         OrderRequest(RequestType::SUB_LO, Side::sell, 100, 12),
         OrderRequest(RequestType::CXL, 3)};
+    OrderRequest reply{};
     for (auto& order : orders) {
       client.sendMessage(order);
-      OrderRequest reply{client.receiveMessage()};
+      client.receiveMessage(reply);
     }
+    client.shutdownSocket();
+    int byteCount = 0;
+    do {
+      byteCount = client.receiveMessage(reply);
+      if (byteCount> 0)
+        std::cout << "Received " << byteCount << " bytes\n";
+
+      else if (byteCount== 0)
+        printf("Connection closed\n");
+    } while (byteCount > 0);
 
   } catch (const std::runtime_error& e) {
     std::cout << "Runtime error: " << e.what() << '\n';

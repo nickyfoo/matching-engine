@@ -16,8 +16,9 @@ class TCPServer {
     closesocket(m_serverSocket);
     closesocket(m_acceptSocket);
   }
-  void sendMessage(const OrderRequest& request);
-  OrderRequest receiveMessage();
+  int sendMessage(const OrderRequest& request);
+  int receiveMessage(OrderRequest& request);
+  void shutdownSocket();
 
  private:
   static constexpr int k_port{55555};

@@ -15,8 +15,10 @@ class TCPClient {
   ~TCPClient() {
     closesocket(m_clientSocket);
   }
-  void sendMessage(const OrderRequest& request);
-  OrderRequest receiveMessage();
+
+  void shutdownSocket();
+  int sendMessage(const OrderRequest& request);
+  int receiveMessage(OrderRequest& request);
 
  private:
   static constexpr int k_port{55555};

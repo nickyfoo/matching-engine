@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 
-
 void TCPClient::createSocket() {
   m_clientSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (m_clientSocket == INVALID_SOCKET) {
@@ -25,22 +24,34 @@ void TCPClient::connectToServer() {
   std::cout << "Client: Connected to server\n";
 }
 
-void TCPClient::sendMessage(const OrderRequest& request) {
+void TCPClient::shutdownSocket() {
+  if (shutdown(m_clientSocket, SD_SEND) == SOCKET_ERROR) {
+    throw std::runtime_error("Client: shutdown() failed: " +
+                             std::to_string(WSAGetLastError()));
+  }
+  std::cout << "Client: Socket shutdown\n";
+}
+
+int TCPClient::sendMessage(const OrderRequest& request) {
   int byteCount{send(m_clientSocket, (char*)&request, sizeof(OrderRequest), 0)};
-  if (byteCount < 0) {
+  if (byteCount == 0)
+    return 0;
+  else if (byteCount < 0) {
     throw std::runtime_error("Client: send() failed: " +
                              std::to_string(WSAGetLastError()));
   }
   std::cout << "Sent: " << request << '\n';
+  return byteCount;
 }
 
-OrderRequest TCPClient::receiveMessage() {
-  OrderRequest request{};
+int TCPClient::receiveMessage(OrderRequest& request) {
   int byteCount{recv(m_clientSocket, (char*)&request, sizeof(OrderRequest), 0)};
-  if (byteCount < 0) {
+  if (byteCount == 0)
+    return 0;
+  else if (byteCount < 0) {
     throw std::runtime_error("Client: recv() failed: " +
                              std::to_string(WSAGetLastError()));
   }
   std::cout << "Received: " << request << '\n';
-  return request;
+  return byteCount;
 }

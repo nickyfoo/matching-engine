@@ -22,13 +22,20 @@ int main() {
     TCPServer server{};
     OrderBook orderBook{};
     OrderDispatcher dispatcher{orderBook};
-    while (true) {
-      OrderRequest request{server.receiveMessage()};
-      dispatcher.dispatch(request);
-      std::cout << orderBook << '\n';
-      server.sendMessage(request);
-    }
-
+    int byteCount{};
+    do {
+      OrderRequest request{};
+      byteCount = server.receiveMessage(request);
+      if (byteCount > 0) {
+        std::cout << "Received " << byteCount << " bytes\n";
+        dispatcher.dispatch(request);
+        std::cout << orderBook << '\n';
+        server.sendMessage(request);
+      } else if (byteCount == 0) {
+        std::cout << "Closing connection\n";
+      }
+    } while (byteCount > 0);
+    server.shutdownSocket();
   } catch (const std::runtime_error& e) {
     std::cout << "Runtime error: " << e.what() << '\n';
   }

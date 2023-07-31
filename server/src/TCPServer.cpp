@@ -37,6 +37,14 @@ void TCPServer::setupSocket() {
   listenOnSocket();
 }
 
+void TCPServer::shutdownSocket() {
+  if (shutdown(m_acceptSocket, SD_SEND) == SOCKET_ERROR) {
+    throw std::runtime_error("Server: shutdown() failed: " +
+                             std::to_string(WSAGetLastError()));
+  }
+  std::cout << "Server: Socket shutdown\n";
+}
+
 void TCPServer::acceptConnection() {
   m_acceptSocket = accept(m_serverSocket, nullptr, nullptr);
   if (m_acceptSocket == INVALID_SOCKET) {
@@ -46,22 +54,25 @@ void TCPServer::acceptConnection() {
   std::cout << "Server: Connection accepted\n";
 }
 
-void TCPServer::sendMessage(const OrderRequest& request) {
+int TCPServer::sendMessage(const OrderRequest& request) {
   int byteCount{send(m_acceptSocket, (char*)&request, sizeof(OrderRequest), 0)};
+  if (byteCount == 0) return 0;
   if (byteCount < 0) {
     throw std::runtime_error("Server: send() failed: " +
                              std::to_string(WSAGetLastError()));
   }
   std::cout << "Sent: " << request << '\n';
+  return byteCount;
 }
 
-OrderRequest TCPServer::receiveMessage() {
-  OrderRequest request{};
+int TCPServer::receiveMessage(OrderRequest& request) {
   int byteCount{recv(m_acceptSocket, (char*)&request, sizeof(OrderRequest), 0)};
-  if (byteCount < 0) {
+  if (byteCount == 0)
+    return 0;
+  else if (byteCount < 0) {
     throw std::runtime_error("Server: recv() failed: " +
                              std::to_string(WSAGetLastError()));
   }
   std::cout << "Received: " << request << '\n';
-  return request;
+  return byteCount;
 }

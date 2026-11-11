@@ -12,7 +12,7 @@ void TCPServer::createSocket() {
 
 void TCPServer::bindSocket() {
   serverService.sin_family = AF_INET;
-  InetPton(AF_INET, L"127.0.0.1", &serverService.sin_addr.s_addr);
+  InetPton(AF_INET, "127.0.0.1", &serverService.sin_addr.s_addr);
   serverService.sin_port = htons(k_port);
   if (bind(m_serverSocket, (SOCKADDR*)&serverService, sizeof(serverService)) ==
       SOCKET_ERROR) {
